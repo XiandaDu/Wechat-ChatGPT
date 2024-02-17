@@ -12,7 +12,7 @@ export class ChatGPT {
             model: "gpt-3.5-turbo",
             ...body,
         }, {
-            headers: { "Content-Type": "application/json", Authorization: `Bearer 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`, connection: "" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer `, connection: "" },
         })
 
         const msg = res?.choices[0]?.message?.content.trim() || ''
