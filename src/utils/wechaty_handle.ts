@@ -3,7 +3,6 @@ import { getLogger } from 'src/utils'
 import { ChatGPT } from './chatgpt'
 import * as fs from 'fs';
 const chatgptClient = new ChatGPT()
-const jsonPath = 'data.json'
 const logger = getLogger('wechaty')
 
 const scanHandle = (qrcode) => {
@@ -72,13 +71,22 @@ async function replyFriendMessage(that, msg) {
             const content = msg.text();
             if(!isOfficial){
                 logger.info(`Sender${contactName}:${content}`)
+                const jsonFilePath = 'data-'+contactName+'.json';
                 if(content.trim()){
-                    appendJson(content)
-                    console.log("after append")
-                    const externalData = fs.readFileSync(jsonPath, 'utf-8');
+                    fs.access(jsonFilePath, fs.constants.F_OK, (err) => {
+                        if (err) {
+                            // 文件不存在，创建新文件并写入 JSON 数据
+                            fs.writeFile(jsonFilePath, JSON.stringify([], null, 2), (err) => {
+                                if (err) {
+                                    console.error('Failed to create JSON file:', err);
+                                }
+                            });
+                        }
+                    });
+                    appendJson(content, jsonFilePath)
+                    const externalData = fs.readFileSync(jsonFilePath, 'utf-8');
                     const answer = await chatgptClient.askAi({
                         messages: JSON.parse(externalData)
-                        
                     })
                     contact.say(answer)
                 }
@@ -118,6 +126,7 @@ function messageHandle (msg) {
     if(msgSelf) return
 
     if (msg.text()=="清除"){
+        const jsonPath = 'data-'+msg.talker().name()+'.json';
         fs.writeFileSync(jsonPath, JSON.stringify([], null, 2));
     } else {
         if(!room) {
@@ -130,15 +139,15 @@ function messageHandle (msg) {
     }
 }
 
-function appendJson(msg){
+function appendJson(msg, jsonFilePath){
     // 读取JSON文件内容
-    const data = fs.readFileSync(jsonPath, 'utf-8');
+    const data = fs.readFileSync(jsonFilePath, 'utf-8');
     // 解析JSON
     const jsonData = JSON.parse(data);
     // 添加新的对象到JSON数组中
     jsonData.push({"role": "user", "content": msg});
     // 将更新后的JSON写回文件
-    fs.writeFileSync(jsonPath, JSON.stringify(jsonData, null, 2));
+    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
 }
 
 export {

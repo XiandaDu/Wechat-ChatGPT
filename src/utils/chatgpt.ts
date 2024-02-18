@@ -1,7 +1,8 @@
 import { HttpClient } from './http_base'
 import * as fs from 'fs';
+import * as dotenv from 'dotenv';
+dotenv.config();
 const chatpgtClient = HttpClient("https://api.openai.com")
-const jsonPath = 'data.json'
 
 export class ChatGPT {
     constructor() {
@@ -12,7 +13,7 @@ export class ChatGPT {
             model: "gpt-3.5-turbo",
             ...body,
         }, {
-            headers: { "Content-Type": "application/json", Authorization: `Bearer `, connection: "" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer `+ process.env.API_KEY, connection: "" },
         })
 
         const msg = res?.choices[0]?.message?.content.trim() || ''
@@ -22,6 +23,7 @@ export class ChatGPT {
 }
 
 function appendJson(msg){
+    const jsonPath = 'data-' + msg.talker().name() + '.json';
     // 读取JSON文件内容
     const data = fs.readFileSync(jsonPath, 'utf-8');
     // 解析JSON
