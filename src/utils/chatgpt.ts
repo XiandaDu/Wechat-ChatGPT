@@ -8,7 +8,7 @@ export class ChatGPT {
     constructor() {
     }
 
-    async askAi(body) {
+    async askAi(body, jsonFilePath) {
         const res = await chatpgtClient.post('/v1/chat/completions', {
             model: "gpt-3.5-turbo",
             ...body,
@@ -17,13 +17,12 @@ export class ChatGPT {
         })
 
         const msg = res?.choices[0]?.message?.content.trim() || ''
-        appendJson(msg)
+        appendJson(msg, jsonFilePath)
         return msg
     }
 }
 
-function appendJson(msg){
-    const jsonPath = 'data-' + msg.talker().name() + '.json';
+function appendJson(msg, jsonPath){
     // 读取JSON文件内容
     const data = fs.readFileSync(jsonPath, 'utf-8');
     // 解析JSON

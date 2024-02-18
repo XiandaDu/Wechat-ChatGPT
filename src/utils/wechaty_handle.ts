@@ -29,11 +29,12 @@ async function replyRoomMessage(that,room, msg) {
             const content = msg.text();
             logger.info(`Group name: ${roomName} Sender name: ${contactName} Content: ${content}`)
             if(mentionSelf){
+                const jsonFilePath = msg.talker().name();
                 const answer = await chatgptClient.askAi({
                     messages: [
                         {"role": "user", "content": `${content}`},
                     ]
-                })
+                }, jsonFilePath)
                 room.say(`@${contactName} ${answer}`)
             }
             break;
@@ -87,7 +88,7 @@ async function replyFriendMessage(that, msg) {
                     const externalData = fs.readFileSync(jsonFilePath, 'utf-8');
                     const answer = await chatgptClient.askAi({
                         messages: JSON.parse(externalData)
-                    })
+                    }, jsonFilePath)
                     contact.say(answer)
                 }
             }else{
