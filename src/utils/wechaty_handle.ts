@@ -9,6 +9,7 @@ const scanHandle = (qrcode) => {
     qrterminal.generate(qrcode, {small: true})
     const qrUrl = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`
     logger.info({ qrUrl }, 'scan qrimageurl')
+    console.log(qrUrl)
 }
 
 const loginHandle = (user) => {
