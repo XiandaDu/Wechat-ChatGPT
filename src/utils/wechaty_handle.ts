@@ -4,10 +4,11 @@ import { ChatGPT } from './chatgpt'
 import * as fs from 'fs';
 const chatgptClient = new ChatGPT()
 const logger = getLogger('wechaty')
+let qrUrl = ""
 
 const scanHandle = (qrcode) => {
     qrterminal.generate(qrcode, {small: true})
-    const qrUrl = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`
+    qrUrl = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`
     logger.info({ qrUrl }, 'scan qrimageurl')
     console.log(qrUrl)
 }
@@ -155,5 +156,6 @@ function appendJson(msg, jsonFilePath){
 export {
     scanHandle,
     loginHandle,
-    messageHandle
+    messageHandle,
+    qrUrl
 }
