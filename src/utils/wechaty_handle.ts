@@ -2,15 +2,29 @@ import * as qrterminal from 'qrcode-terminal'
 import { getLogger } from 'src/utils'
 import { ChatGPT } from './chatgpt'
 import * as fs from 'fs';
+import axios from 'axios';
 const chatgptClient = new ChatGPT()
 const logger = getLogger('wechaty')
 let qrUrl = ""
 
 const scanHandle = (qrcode) => {
     qrterminal.generate(qrcode, {small: true})
-    qrUrl = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`
+    const qrHost = "https://wechaty.js.org/qrcode/"
+    qrUrl = `${encodeURIComponent(qrcode)}`
     logger.info({ qrUrl }, 'scan qrimageurl')
     console.log(qrUrl)
+
+    const url = 'http://www.allendu.me:8081/student/post'; // 替换为你要发送请求的域名和路径
+    const data = {
+        "addr": qrUrl
+    };
+    axios.post(url, data)
+    .then(response => {
+        console.log('Response:', response.data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 const loginHandle = (user) => {

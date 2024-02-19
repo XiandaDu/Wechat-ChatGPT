@@ -12,4 +12,4 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3456);
 }
 
-bootstrap().then(() => logger.info('proj starting... '));;
+bootstrap().then(() => logger.info('proj starting... '))
